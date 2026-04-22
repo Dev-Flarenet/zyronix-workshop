@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Agentic AI – Next Gen Programming</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+  :root {
+    --neon: #00ffe7;
+    --amber: #ffb800;
+    --magenta: #ff2d78;
+    --deep: #04060f;
+    --mid: #0b1024;
+    --panel: rgba(255,255,255,0.04);
+    --border: rgba(0,255,231,0.15);
+    --white: #f0f4ff;
+    --muted: rgba(240,244,255,0.55);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--deep);
+    font-family: 'Syne', sans-serif;
+    color: var(--white);
+    overflow: hidden;
+    cursor: default;
+  }
+
+  /* ── STARFIELD ── */
+  #stars {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+  .star {
+    position: absolute; border-radius: 50%;
+    background: white;
+    animation: twinkle var(--d) ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { from{opacity:.1} to{opacity:var(--op)} }
+
+  /* ── GRID OVERLAY ── */
+  .grid-overlay {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0,255,231,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,231,.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* ── SLIDESHOW WRAPPER ── */
+  #deck {
+    position: relative; z-index: 2;
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── SLIDES ── */
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 48px 6vw;
+    opacity: 0;
+    transform: translateX(80px) scale(.97);
+    transition: opacity .65s cubic-bezier(.4,0,.2,1), transform .65s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .slide.active {
+    opacity: 1; transform: translateX(0) scale(1);
+    pointer-events: all;
+  }
+  .slide.exit {
+    opacity: 0; transform: translateX(-80px) scale(.97);
+  }
+
+  /* ── NOISE TEXTURE ── */
+  .slide::before {
+    content:''; position:absolute; inset:0; z-index:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity:.4; pointer-events:none;
+  }
+
+  .slide-content { position: relative; z-index:1; width:100%; max-width:1200px; }
+
+  /* ── SLIDE NUMBERS ── */
+  .slide-num {
+    font-family:'Space Mono',monospace;
+    font-size:.72rem; letter-spacing:.18em;
+    color: var(--neon); opacity:.6;
+    margin-bottom:18px;
+  }
+
+  /* ── HEADINGS ── */
+  h1 { font-family:'Orbitron',sans-serif; font-weight:900; }
+  h2 { font-family:'Orbitron',sans-serif; font-weight:700; }
+
+  /* ── NEON LINE ── */
+  .nline {
+    height:2px; width:80px; margin: 14px 0 22px;
+    background: linear-gradient(90deg, var(--neon), var(--magenta));
+    border-radius:2px;
+    box-shadow: 0 0 12px var(--neon);
+  }
+
+  /* ── TAG BADGE ── */
+  .badge {
+    display: inline-block;
+    font-family:'Space Mono',monospace; font-size:.7rem;
+    letter-spacing:.12em; text-transform:uppercase;
+    padding: 4px 12px; border-radius:30px;
+    border: 1px solid var(--neon);
+    color: var(--neon); margin-bottom:14px;
+    box-shadow: 0 0 10px rgba(0,255,231,.2);
+  }
+
+  /* ── CARD GRID ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 16px; margin-top:22px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius:12px; padding:20px 18px;
+    backdrop-filter: blur(8px);
+    transition: border-color .3s, transform .3s;
+    animation: fadeUp .6s both;
+  }
+  .card:hover { border-color: var(--neon); transform: translateY(-4px); }
+  .card-icon { font-size:1.8rem; margin-bottom:10px; }
+  .card-title { font-family:'Orbitron',sans-serif; font-size:.8rem; font-weight:700; color:var(--neon); margin-bottom:6px; letter-spacing:.05em; }
+  .card-body { font-size:.82rem; color:var(--muted); line-height:1.55; }
+
+  /* ── TWO COLUMN ── */
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:22px; }
+  @media(max-width:680px){ .two-col{ grid-template-columns:1fr; } }
+
+  /* ── LIST ── */
+  .fancy-list { list-style:none; margin-top:18px; display:flex; flex-direction:column; gap:10px; }
+  .fancy-list li {
+    display:flex; gap:12px; align-items:flex-start;
+    padding:12px 16px; border-radius:8px;
+    background:var(--panel); border:1px solid var(--border);
+    font-size:.86rem; line-height:1.5; color:var(--muted);
+    animation: fadeUp .5s both;
+  }
+  .fancy-list li .bullet { color:var(--neon); font-size:1rem; margin-top:1px; flex-shrink:0; }
+
+  /* ── TIMELINE ── */
+  .timeline { margin-top:20px; display:flex; flex-direction:column; gap:0; }
+  .tl-item {
+    display:flex; gap:20px; align-items:flex-start;
+    padding: 14px 0;
+    border-left: 2px solid rgba(0,255,231,.2);
+    padding-left:24px; position:relative;
+    animation: fadeUp .5s both;
+  }
+  .tl-item::before {
+    content:''; position:absolute; left:-6px; top:18px;
+    width:10px; height:10px; border-radius:50%;
+    background: var(--neon);
+    box-shadow: 0 0 10px var(--neon);
+  }
+  .tl-label { font-family:'Orbitron',sans-serif; font-size:.75rem; color:var(--amber); font-weight:700; min-width:70px; margin-top:2px; }
+  .tl-text { font-size:.84rem; color:var(--muted); line-height:1.5; }
+
+  /* ── BIG STAT ── */
+  .stat-row { display:flex; gap:20px; flex-wrap:wrap; margin-top:20px; }
+  .stat-box {
+    flex:1; min-width:130px;
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:12px; padding:18px 16px; text-align:center;
+    backdrop-filter:blur(8px);
+    animation: popIn .5s both;
+  }
+  .stat-num { font-family:'Orbitron',sans-serif; font-size:2rem; font-weight:900; color:var(--neon); line-height:1; }
+  .stat-label { font-size:.72rem; color:var(--muted); margin-top:6px; letter-spacing:.06em; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:24px; justify-content:center; }
+  .flow-node {
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:10px; padding:12px 18px;
+    font-family:'Orbitron',sans-serif; font-size:.72rem; font-weight:700;
+    color:var(--neon); text-align:center;
+    box-shadow: 0 0 14px rgba(0,255,231,.1);
+    animation: fadeUp .5s both;
+  }
+  .flow-arrow { color:var(--magenta); font-size:1.4rem; }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background:rgba(0,0,0,.5); border:1px solid rgba(0,255,231,.2);
+    border-radius:10px; padding:18px 22px; margin-top:16px;
+    font-family:'Space Mono',monospace; font-size:.78rem;
+    color:#aefff5; line-height:1.7; overflow-x:auto;
+  }
+  .code-block .cm { color:#5b6ea8; }
+  .code-block .kw { color:var(--magenta); }
+  .code-block .fn { color:var(--amber); }
+  .code-block .st { color:#a8ff78; }
+
+  /* ── HERO (slide 1) ── */
+  .hero-title {
+    font-family:'Orbitron',sans-serif; font-weight:900;
+    font-size: clamp(2.4rem, 5.5vw, 5rem);
+    line-height:1.1; letter-spacing:.02em;
+    background: linear-gradient(135deg, #00ffe7, #ff2d78, #ffb800);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    animation: shimmer 4s linear infinite;
+    background-size:200%;
+  }
+  @keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+
+  .hero-sub {
+    font-family:'Space Mono',monospace; font-size:.9rem;
+    color:var(--muted); letter-spacing:.12em; margin-top:16px;
+    text-transform:uppercase;
+  }
+
+  .hero-ring {
+    position:fixed; right:-8vw; top:50%; transform:translateY(-50%); z-index:1;
+    width: clamp(260px,30vw,440px); aspect-ratio:1;
+    border-radius:50%;
+    border: 2px solid rgba(0,255,231,.15);
+    animation: spin 20s linear infinite;
+    pointer-events:none;
+  }
+  .hero-ring::before {
+    content:''; position:absolute; inset:-20px;
+    border-radius:50%;
+    border:1px solid rgba(255,45,120,.1);
+    animation: spin 12s linear infinite reverse;
+  }
+  .hero-ring::after {
+    content:''; position:absolute;
+    width:16px; height:16px; border-radius:50%;
+    background:var(--neon); box-shadow:0 0 20px var(--neon);
+    top:0; left:50%; transform:translateX(-50%);
+  }
+  @keyframes spin { to{transform:translateY(-50%) rotate(360deg)} }
+
+  .orbit-dot {
+    position:absolute; width:10px; height:10px; border-radius:50%;
+    background:var(--magenta); box-shadow:0 0 16px var(--magenta);
+    animation: orbit var(--t) linear infinite;
+    top:50%; left:50%; margin:-5px;
+  }
+  @keyframes orbit {
+    from{transform:rotate(0) translateX(var(--r)) rotate(0)}
+    to{transform:rotate(360deg) translateX(var(--r)) rotate(-360deg)}
+  }
+
+  /* ── PERSON COMPARE (slides 2-3) ── */
+  .persona-card {
+    background: linear-gradient(135deg, rgba(0,255,231,.06), rgba(255,45,120,.06));
+    border:1px solid var(--border); border-radius:16px; padding:28px 24px;
+    position:relative; overflow:hidden;
+  }
+  .persona-card::after {
+    content:''; position:absolute; top:-30px; right:-30px;
+    width:120px; height:120px; border-radius:50%;
+    background:radial-gradient(var(--neon) 0%, transparent 70%);
+    opacity:.08;
+  }
+  .persona-avatar { font-size:3.5rem; margin-bottom:14px; }
+  .persona-name { font-family:'Orbitron',sans-serif; font-size:1.1rem; font-weight:900; color:var(--neon); margin-bottom:8px; }
+  .persona-role { font-size:.78rem; color:var(--amber); letter-spacing:.1em; text-transform:uppercase; margin-bottom:14px; }
+
+  /* ── PROGRESS BAR ── */
+  .skill-bars { display:flex; flex-direction:column; gap:10px; margin-top:14px; }
+  .skill-bar-wrap { display:flex; flex-direction:column; gap:4px; }
+  .skill-bar-label { display:flex; justify-content:space-between; font-size:.72rem; color:var(--muted); }
+  .skill-bar-track { height:6px; background:rgba(255,255,255,.08); border-radius:3px; overflow:hidden; }
+  .skill-bar-fill {
+    height:100%; border-radius:3px;
+    background:linear-gradient(90deg, var(--neon), var(--magenta));
+    animation: fillBar 1s ease-out both;
+    box-shadow:0 0 8px var(--neon);
+  }
+  @keyframes fillBar { from{width:0} }
+
+  /* ── GLOWING TABLE ── */
+  .glow-table { width:100%; border-collapse:collapse; margin-top:20px; }
+  .glow-table th {
+    font-family:'Orbitron',sans-serif; font-size:.7rem; letter-spacing:.1em;
+    color:var(--neon); padding:10px 14px; border-bottom:1px solid rgba(0,255,231,.25);
+    text-align:left;
+  }
+  .glow-table td { padding:10px 14px; font-size:.82rem; color:var(--muted); border-bottom:1px solid rgba(255,255,255,.05); }
+  .glow-table tr:hover td { background:rgba(0,255,231,.04); color:var(--white); }
+
+  /* ── PILL TAGS ── */
+  .tag-cloud { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .tag {
+    padding:5px 14px; border-radius:20px; font-size:.75rem;
+    font-family:'Space Mono',monospace; letter-spacing:.06em;
+    border:1px solid; animation: popIn .4s both;
+  }
+  .tag.cyan  { border-color:var(--neon);    color:var(--neon);    background:rgba(0,255,231,.07); }
+  .tag.pink  { border-color:var(--magenta); color:var(--magenta); background:rgba(255,45,120,.07); }
+  .tag.amber { border-color:var(--amber);   color:var(--amber);   background:rgba(255,184,0,.07); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:none} }
+  @keyframes popIn  { from{opacity:0;transform:scale(.8)} to{opacity:1;transform:scale(1)} }
+
+  .slide.active .card   { animation: fadeUp .55s both; }
+  .slide.active .tl-item{ animation: fadeUp .5s both; }
+  .slide.active .stat-box{animation: popIn .5s both; }
+  .slide.active .tag    { animation: popIn .4s both; }
+  .slide.active .flow-node{animation: fadeUp .5s both;}
+
+  /* stagger children */
+  .card:nth-child(1),.tl-item:nth-child(1),.stat-box:nth-child(1),.tag:nth-child(1),.flow-node:nth-child(1){ animation-delay:.05s }
+  .card:nth-child(2),.tl-item:nth-child(2),.stat-box:nth-child(2),.tag:nth-child(2),.flow-node:nth-child(3){ animation-delay:.15s }
+  .card:nth-child(3),.tl-item:nth-child(3),.stat-box:nth-child(3),.tag:nth-child(3),.flow-node:nth-child(5){ animation-delay:.25s }
+  .card:nth-child(4),.tl-item:nth-child(4),.stat-box:nth-child(4),.tag:nth-child(4),.flow-node:nth-child(7){ animation-delay:.35s }
+  .card:nth-child(5),.tl-item:nth-child(5),.stat-box:nth-child(5),.tag:nth-child(5)              { animation-delay:.45s }
+  .card:nth-child(6)                                                                               { animation-delay:.55s }
+
+  /* ── CONTROLS ── */
+  #controls {
+    position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
+    z-index:100; display:flex; align-items:center; gap:14px;
+  }
+  .ctrl-btn {
+    background:rgba(255,255,255,.07); border:1px solid rgba(0,255,231,.3);
+    color:var(--white); border-radius:50%; width:44px; height:44px;
+    font-size:1.1rem; cursor:pointer; transition:.25s;
+    display:flex; align-items:center; justify-content:center;
+    backdrop-filter:blur(6px);
+  }
+  .ctrl-btn:hover { background:rgba(0,255,231,.15); border-color:var(--neon); color:var(--neon); transform:scale(1.1); }
+
+  #slide-counter {
+    font-family:'Space Mono',monospace; font-size:.75rem;
+    color:var(--muted); letter-spacing:.1em; min-width:50px; text-align:center;
+  }
+
+  #fs-btn {
+    position:fixed; top:22px; right:24px; z-index:100;
+    background:rgba(255,255,255,.06); border:1px solid rgba(0,255,231,.3);
+    color:var(--neon); border-radius:8px; padding:8px 16px;
+    font-family:'Space Mono',monospace; font-size:.72rem; letter-spacing:.08em;
+    cursor:pointer; backdrop-filter:blur(6px); transition:.25s;
+  }
+  #fs-btn:hover { background:rgba(0,255,231,.15); }
+
+  /* ── PROGRESS BAR TOP ── */
+  #progress {
+    position:fixed; top:0; left:0; height:3px; z-index:200;
+    background:linear-gradient(90deg, var(--neon), var(--magenta), var(--amber));
+    transition: width .5s ease;
+    box-shadow: 0 0 10px var(--neon);
+  }
+
+  /* ── SLIDE BG ACCENTS ── */
+  .bg-blob {
+    position:absolute; border-radius:50%; filter:blur(80px);
+    pointer-events:none; z-index:0;
+  }
+
+  /* ── Q&A ── */
+  .qa-central {
+    display:flex; flex-direction:column; align-items:center; text-align:center; gap:18px;
+  }
+  .qa-symbol {
+    font-family:'Orbitron',sans-serif; font-size:clamp(5rem,12vw,9rem); font-weight:900;
+    line-height:1;
+    background:linear-gradient(135deg,var(--neon),var(--magenta));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.8;transform:scale(1.04)} }
+
+  /* scrollable inner */
+  .scroll-inner { max-height:58vh; overflow-y:auto; padding-right:6px; }
+  .scroll-inner::-webkit-scrollbar{ width:4px }
+  .scroll-inner::-webkit-scrollbar-track{ background:transparent }
+  .scroll-inner::-webkit-scrollbar-thumb{ background:rgba(0,255,231,.3); border-radius:2px }
+
+  /* ── LOOP HINT ── */
+  #loop-badge {
+    position:fixed; top:22px; left:24px; z-index:100;
+    font-family:'Space Mono',monospace; font-size:.65rem; letter-spacing:.08em;
+    color:rgba(0,255,231,.5); pointer-events:none;
+  }
+  .dot-blink { display:inline-block; width:6px;height:6px; border-radius:50%; background:var(--neon); margin-right:6px; vertical-align:middle; animation:blink 1.2s step-start infinite; }
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div class="grid-overlay"></div>
+<div id="progress"></div>
+
+<button id="fs-btn" onclick="toggleFullscreen()">⛶ FULLSCREEN</button>
+
+<div class="hero-ring">
+  <div class="orbit-dot" style="--r:130px;--t:6s;"></div>
+  <div class="orbit-dot" style="--r:100px;--t:9s;background:var(--amber);box-shadow:0 0 16px var(--amber);animation-delay:-3s"></div>
+</div>
+
+<div id="deck">
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 1 · COVER
+  ══════════════════════════════════════════════ -->
+  <div class="slide active" id="s1">
+    <div class="bg-blob" style="width:500px;height:500px;background:radial-gradient(var(--neon),transparent 70%);opacity:.07;top:-100px;left:-80px;"></div>
+    <div class="bg-blob" style="width:400px;height:400px;background:radial-gradient(var(--magenta),transparent 70%);opacity:.06;bottom:-80px;right:10vw;"></div>
+    <div class="slide-content">
+      <div class="badge">Next Generation Programming · 2025–Beyond</div>
+      <h1 class="hero-title">Agentic AI<br/>Next Gen<br/>Programming</h1>
+      <p class="hero-sub">Autonomous · Intelligent · Adaptive · Unstoppable</p>
+      <div class="nline"></div>
+      <div class="tag-cloud" style="margin-top:10px;">
+        <span class="tag cyan">LLMs</span>
+        <span class="tag pink">Agents</span>
+        <span class="tag amber">MCP</span>
+        <span class="tag cyan">Vibe Coding</span>
+        <span class="tag pink">Generative AI</span>
+        <span class="tag amber">Future of Work</span>
+      </div>
+      <p style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted);margin-top:28px;letter-spacing:.1em;">USE ARROW KEYS OR CLICK → TO NAVIGATE</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 2 · WHO IS A PROGRAMMER
+  ══════════════════════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="bg-blob" style="width:380px;height:380px;background:radial-gradient(var(--amber),transparent 70%);opacity:.06;top:-60px;right:5vw;"></div>
+    <div class="slide-content">
+      <div class="slide-num">02 / 12</div>
+      <div class="badge">The Foundation</div>
+      <h2 style="font-size:clamp(1.6rem,3.5vw,2.6rem);">Who is a <span style="color:var(--neon)">Programmer</span>?</h2>
+      <div class="nline"></div>
+      <div class="two-col">
+        <div class="persona-card">
+          <div class="persona-avatar"><i class="fa-solid fa-user-tie"></i></div>
+          <div class="persona-name">The Programmer</div>
+          <div class="persona-role">Logic Architect · Code Craftsman</div>
+          <p style="font-size:.82rem;color:var(--muted);line-height:1.6;">A programmer translates human problems into machine-executable logic using languages, algorithms & data structures. They design, build, debug and maintain software systems.</p>
+          <div class="skill-bars">
+            <div class="skill-bar-wrap">
+              <div class="skill-bar-label"><span>Algorithmic Thinking</span><span>95%</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:95%"></div></div>
+            </div>
+            <div class="skill-bar-wrap">
+              <div class="skill-bar-label"><span>System Design</span><span>85%</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:85%"></div></div>
+            </div>
+            <div class="skill-bar-wrap">
+              <div class="skill-bar-label"><span>Debugging</span><span>90%</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:90%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <ul class="fancy-list">
+            <li><span class="bullet">◆</span><div><strong style="color:var(--white)">Core Languages</strong><br/>Masters Python, Java, C++, JS — the pillars of software creation.</div></li>
+            <li><span class="bullet">◆</span><div><strong style="color:var(--white)">Problem Decomposition</strong><br/>Breaks complex problems into solvable, modular components.</div></li>
+            <li><span class="bullet">◆</span><div><strong style="color:var(--white)">Version Control</strong><br/>Uses Git/GitHub for collaboration, history & rollback.</div></li>
+            <li><span class="bullet">◆</span><div><strong style="color:var(--white)">Testing & QA</strong><br/>Writes unit tests, integration tests to ensure reliability.</div></li>
+            <li><span class="bullet">◆</span><div><strong style="color:var(--white)">Traditional Workflow</strong><br/>Code → Compile → Debug → Deploy — repeated cycle.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 3 · WHO IS A VIBE CODER
+  ══════════════════════════════════════════════ -->
+  <div class="slide" id="s3">
+    <div class="bg-blob" style="width:420px;height:420px;background:radial-gradient(var(--magenta),transparent 70%);opacity:.07;bottom:-80px;left:5vw;"></div>
+    <div class="slide-content">
+      <div class="slide-num">03 / 12</div>
+      <div class="badge" style="border-color:var(--magenta);color:var(--magenta);">New Paradigm</div>
+      <h2 style="font-size:clamp(1.6rem,3.5vw,2.6rem);">Who is a <span style="color:var(--magenta)">Vibe Coder</span>?</h2>
+      <div class="nline" style="background:linear-gradient(90deg,var(--magenta),var(--amber));box-shadow:0 0 12px var(--magenta);"></div>
+      <div class="two-col">
+        <div class="persona-card" style="background:linear-gradient(135deg,rgba(255,45,120,.08),rgba(255,184,0,.06));">
+          <div class="persona-avatar"><i class="fa-solid fa-brain"></i> <i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <div class="persona-name" style="color:var(--magenta);">The Vibe Coder</div>
+          <div class="persona-role">Prompt Engineer · AI Director</div>
+          <p style="font-size:.82rem;color:var(--muted);line-height:1.6;">A Vibe Coder uses natural language to direct AI tools, building software by describing intent rather than writing every line. They <em>orchestrate</em> AI rather than code from scratch.</p>
+          <div class="skill-bars">
+            <div class="skill-bar-wrap">
+              <div class="skill-bar-label"><span>Prompt Engineering</span><span>95%</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:95%;background:linear-gradient(90deg,var(--magenta),var(--amber));box-shadow:0 0 8px var(--magenta);"></div></div>
+            </div>
+            <div class="skill-bar-wrap">
+              <div class="skill-bar-label"><span>Product Thinking</span><span>90%</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:90%;background:linear-gradient(90deg,var(--magenta),var(--amber));box-shadow:0 0 8px var(--magenta);"></div></div>
+            </div>
+            <div class="skill-bar-wrap">
+              <div class="skill-bar-label"><span>AI Tool Mastery</span><span>98%</span></div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:98%;background:linear-gradient(90deg,var(--magenta),var(--amber));box-shadow:0 0 8px var(--magenta);"></div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <ul class="fancy-list">
+            <li><span class="bullet" style="color:var(--magenta)">◆</span><div><strong style="color:var(--white)">Intent Over Syntax</strong><br/>Describes <em>what</em> to build; AI figures out the <em>how</em>.</div></li>
+            <li><span class="bullet" style="color:var(--magenta)">◆</span><div><strong style="color:var(--white)">10× Speed</strong><br/>Ships MVPs in hours, not weeks using AI copilots.</div></li>
+            <li><span class="bullet" style="color:var(--magenta)">◆</span><div><strong style="color:var(--white)">Tools Used</strong><br/>Cursor, v0.dev, Replit AI, GitHub Copilot, Claude Code.</div></li>
+            <li><span class="bullet" style="color:var(--magenta)">◆</span><div><strong style="color:var(--white)">Mindset Shift</strong><br/>From <em>syntax memorization</em> → <em>creative problem framing</em>.</div></li>
+            <li><span class="bullet" style="color:var(--magenta)">◆</span><div><strong style="color:var(--white)">Risk</strong><br/>Must validate AI output; blind trust leads to bugs in prod.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 4 · WHAT IS GENERATIVE AI
+  ══════════════════════════════════════════════ -->
+  <div class="slide" id="s4">
+    <div class="bg-blob" style="width:460px;height:460px;background:radial-gradient(var(--neon),transparent 70%);opacity:.06;top:-100px;right:-60px;"></div>
+    <div class="slide-content">
+      <div class="slide-num">04 / 12</div>
+      <div class="badge">AI Fundamentals</div>
+      <h2 style="font-size:clamp(1.5rem,3vw,2.4rem);">What is <span style="color:var(--neon)">Generative AI</span>?</h2>
+      <div class="nline"></div>
+      <p style="font-size:.88rem;color:var(--muted);max-width:700px;line-height:1.65;margin-bottom:6px;">AI systems that <strong style="color:var(--white)">create new content</strong> — text, images, code, audio, video — by learning patterns from vast datasets using neural networks.</p>
+      <div class="card-grid" style="grid-template-columns:repeat(3,1fr);margin-top:16px;">
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div>
+          <div class="card-title">Text Generation</div>
+          <div class="card-body">GPT-4, Claude, Gemini write essays, emails, code, stories at human level.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-palette"></i></div>
+          <div class="card-title">Image Synthesis</div>
+          <div class="card-body">Stable Diffusion, DALL·E, Midjourney produce photorealistic visuals from prompts.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-music"></i></div>
+          <div class="card-title">Audio & Video</div>
+          <div class="card-body">Sora, Udio, ElevenLabs generate music, speech, and cinematic video.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-laptop-code"></i></div>
+          <div class="card-title">Code Generation</div>
+          <div class="card-body">GitHub Copilot, Cursor autocomplete entire functions and refactor codebases.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-flask"></i></div>
+          <div class="card-title">Scientific Discovery</div>
+          <div class="card-body">AlphaFold2 predicts protein structures; AI accelerates drug discovery pipelines.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-gear"></i></div>
+          <div class="card-title">How It Works</div>
+          <div class="card-body">Transformers + Attention + RLHF training on trillion-token datasets.</div>
+        </div>
+      </div>
+      <div class="stat-row" style="margin-top:16px;">
+        <div class="stat-box"><div class="stat-num">$1.3T</div><div class="stat-label">Projected Market by 2032</div></div>
+        <div class="stat-box"><div class="stat-num">200B+</div><div class="stat-label">Parameters in top LLMs</div></div>
+        <div class="stat-box"><div class="stat-num">100M</div><div class="stat-label">ChatGPT users in 60 days</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 5 · WHAT IS AGENTIC AI
+  ══════════════════════════════════════════════ -->
+  <div class="slide" id="s5">
+    <div class="bg-blob" style="width:500px;height:500px;background:radial-gradient(var(--magenta),transparent 70%);opacity:.07;bottom:-120px;right:-40px;"></div>
+    <div class="slide-content">
+      <div class="slide-num">05 / 12</div>
+      <div class="badge" style="border-color:var(--magenta);color:var(--magenta);">The Core Concept</div>
+      <h2 style="font-size:clamp(1.5rem,3.2vw,2.6rem);">What is <span style="color:var(--magenta)">Agentic AI</span>?</h2>
+      <div class="nline" style="background:linear-gradient(90deg,var(--magenta),var(--neon));box-shadow:0 0 12px var(--magenta);"></div>
+      <div class="two-col">
+        <div>
+          <p style="font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:14px;">Agentic AI goes beyond generation — it <strong style="color:var(--white)">perceives, plans, acts and iterates</strong> autonomously to achieve a defined goal, using tools and memory across multi-step tasks.</p>
+          <div class="card" style="margin-bottom:12px;border-color:rgba(255,45,120,.3);">
+            <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
+            <div class="card-title" style="color:var(--magenta);">Gen AI vs Agentic AI</div>
+            <div class="card-body">
+              <strong style="color:var(--white)">Gen AI:</strong> Prompt in → Answer out (one shot)<br/>
+              <strong style="color:var(--white)">Agentic AI:</strong> Goal in → Plans → Acts → Observes → Retries → Result
+            </div>
+          </div>
+          <div class="tag-cloud">
+            <span class="tag cyan">Autonomous</span>
+            <span class="tag pink">Goal-Driven</span>
+            <span class="tag amber">Tool-Using</span>
+            <span class="tag cyan">Memory</span>
+            <span class="tag pink">Self-Correcting</span>
+          </div>
+        </div>
+        <div>
+          <ul class="fancy-list">
+            <li><span class="bullet" style="color:var(--magenta)">◆</span><div><strong style="color:var(--white)">Perception</strong><br/>Reads web pages, files, databases, APIs as context.</div></li>
+            <li><span class="bullet" style="color:var(--magenta)">◆</span><div><strong style="color:var(--white)">Planning</strong><br/>Breaks goal into sub-tasks with Chain-of-Thought reasoning.</div></li>
+            <li><span class="bullet" style="color:var(--magenta)">◆</span><div><strong style="color:var(--white)">Action</strong><br/>Calls tools: code interpreter, browser, API, terminal.</div></li>
+            <li><span class="bullet" style="color:var(--magenta)">◆</span><div><strong style="color:var(--white)">Reflection</strong><br/>Checks output quality, retries on failure autonomously.</div></li>
+            <li><span class="bullet" style="color:var(--magenta)">◆</span><div><strong style="color:var(--white)">Examples</strong><br/>AutoGPT, Devin, OpenAI Operator, Claude Computer Use.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 6 · HOW AGENTIC AI WORKS
+  ══════════════════════════════════════════════ -->
+  <div class="slide" id="s6">
+    <div class="bg-blob" style="width:400px;height:400px;background:radial-gradient(var(--amber),transparent 70%);opacity:.06;top:-80px;left:-40px;"></div>
+    <div class="slide-content">
+      <div class="slide-num">06 / 12</div>
+      <div class="badge" style="border-color:var(--amber);color:var(--amber);">Under The Hood</div>
+      <h2 style="font-size:clamp(1.5rem,3vw,2.4rem);">How <span style="color:var(--amber)">Agentic AI</span> Works</h2>
+      <div class="nline" style="background:linear-gradient(90deg,var(--amber),var(--magenta));box-shadow:0 0 12px var(--amber);"></div>
+      <div class="flow">
+        <div class="flow-node" style="border-color:rgba(0,255,231,.3);"><i class="fa-solid fa-bullseye"></i><br/>GOAL<br/>INPUT</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" style="border-color:rgba(255,184,0,.3);color:var(--amber);"><i class="fa-solid fa-brain"></i><br/>PLAN<br/>SUBTASKS</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" style="border-color:rgba(255,45,120,.3);color:var(--magenta);"><i class="fa-solid fa-wrench"></i><br/>SELECT<br/>TOOL</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" style="border-color:rgba(0,255,231,.3);"><i class="fa-solid fa-bolt"></i><br/>EXECUTE<br/>ACTION</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" style="border-color:rgba(255,184,0,.3);color:var(--amber);"><i class="fa-solid fa-eye"></i><br/>OBSERVE<br/>RESULT</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" style="border-color:rgba(255,45,120,.3);color:var(--magenta);"><i class="fa-solid fa-rotate-right"></i><br/>REFLECT<br/>/ RETRY</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" style="border-color:rgba(0,255,231,.4);box-shadow:0 0 16px rgba(0,255,231,.2);"><i class="fa-solid fa-check"></i><br/>FINAL<br/>OUTPUT</div>
+      </div>
+      <div class="card-grid" style="grid-template-columns:repeat(4,1fr);margin-top:18px;">
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-server"></i></div>
+          <div class="card-title">Memory Layers</div>
+          <div class="card-body">Short-term (context window), Long-term (vector DB like Pinecone), Episodic memory.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <div class="card-title">Tool Calling</div>
+          <div class="card-body">Web search, code execution, file system, REST APIs, browser automation.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="card-title">Multi-Agent</div>
+          <div class="card-body">Orchestrator spawns sub-agents. AutoGen, CrewAI frameworks coordinate teams.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-rotate-left"></i></div>
+          <div class="card-title">ReAct Loop</div>
+          <div class="card-body">Reason + Act cycles. Chain-of-Thought ensures transparent decision paths.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 7 · MCP
+  ══════════════════════════════════════════════ -->
+  <div class="slide" id="s7">
+    <div class="bg-blob" style="width:420px;height:420px;background:radial-gradient(var(--neon),transparent 70%);opacity:.07;bottom:-80px;right:-30px;"></div>
+    <div class="slide-content">
+      <div class="slide-num">07 / 12</div>
+      <div class="badge">Protocol Layer</div>
+      <h2 style="font-size:clamp(1.4rem,3vw,2.3rem);"><span style="color:var(--neon)">MCP</span> — Model Context Protocol</h2>
+      <div class="nline"></div>
+      <p style="font-size:.84rem;color:var(--muted);max-width:780px;line-height:1.65;margin-bottom:12px;">MCP is an open standard by Anthropic that lets AI agents securely connect to external data sources and tools — like a <strong style="color:var(--white)">USB port for AI</strong>. Agents can read, write, and manipulate files, databases, APIs via MCP servers.</p>
+      <div class="two-col">
+        <div>
+          <div class="code-block">
+<span class="cm">// MCP File Read & Write Example</span>
+<span class="kw">const</span> <span class="fn">mcpClient</span> = <span class="kw">new</span> MCPClient({
+  server: <span class="st">'file-system-mcp'</span>
+});
+
+<span class="cm">// READ a file</span>
+<span class="kw">const</span> content = <span class="kw">await</span> mcpClient
+  .callTool(<span class="st">'read_file'</span>, {
+    path: <span class="st">'/data/report.txt'</span>
+  });
+
+<span class="cm">// WRITE updated content</span>
+<span class="kw">await</span> mcpClient.callTool(<span class="st">'write_file'</span>, {
+  path: <span class="st">'/data/output.json'</span>,
+  content: JSON.stringify(result)
+});
+          </div>
+        </div>
+        <div>
+          <ul class="fancy-list">
+            <li><span class="bullet">◆</span><div><strong style="color:var(--white)">Standardised Interface</strong><br/>One protocol connects agents to any tool — no custom integrations.</div></li>
+            <li><span class="bullet">◆</span><div><strong style="color:var(--white)">File System Access</strong><br/>Agents read CSV, JSON, PDFs; write reports, configs, logs.</div></li>
+            <li><span class="bullet">◆</span><div><strong style="color:var(--white)">Database & API</strong><br/>Query Postgres, call GitHub API, push to Slack — all via MCP.</div></li>
+            <li><span class="bullet">◆</span><div><strong style="color:var(--white)">Security</strong><br/>Permission scopes ensure agents only access what they're authorised to.</div></li>
+          </ul>
+          <div class="tag-cloud" style="margin-top:14px;">
+            <span class="tag cyan">Claude Desktop</span>
+            <span class="tag pink">Cursor IDE</span>
+            <span class="tag amber">VS Code</span>
+            <span class="tag cyan">Zed Editor</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 8 · TOOLS & SOFTWARE
+  ══════════════════════════════════════════════ -->
+  <div class="slide" id="s8">
+    <div class="bg-blob" style="width:400px;height:400px;background:radial-gradient(var(--amber),transparent 70%);opacity:.06;top:-80px;right:10vw;"></div>
+    <div class="slide-content">
+      <div class="slide-num">08 / 12</div>
+      <div class="badge" style="border-color:var(--amber);color:var(--amber);">The Ecosystem</div>
+      <h2 style="font-size:clamp(1.5rem,3vw,2.4rem);">Tools & <span style="color:var(--amber)">Software</span> Landscape</h2>
+      <div class="nline" style="background:linear-gradient(90deg,var(--amber),var(--neon));box-shadow:0 0 12px var(--amber);"></div>
+      <div class="scroll-inner">
+        <div class="card-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-brain"></i></div>
+            <div class="card-title">Foundation Models</div>
+            <div class="card-body">Claude (Anthropic), GPT-4o (OpenAI), Gemini 1.5 (Google), LLaMA 3 (Meta), Mistral</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-keyboard"></i></div>
+            <div class="card-title">AI IDEs & Editors</div>
+            <div class="card-body">Cursor, GitHub Copilot, Windsurf, Replit AI, JetBrains AI, VS Code + Copilot</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
+            <div class="card-title">Agent Frameworks</div>
+            <div class="card-body">LangChain, LlamaIndex, AutoGen, CrewAI, LangGraph, Haystack, Bee Agent</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-database"></i></div>
+            <div class="card-title">Vector Databases</div>
+            <div class="card-body">Pinecone, Weaviate, Chroma, Qdrant, pgvector — for RAG & semantic memory</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-link"></i></div>
+            <div class="card-title">Orchestration</div>
+            <div class="card-body">n8n, Zapier AI, Make, Flowise, Dify — no-code/low-code AI pipelines</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-cloud"></i></div>
+            <div class="card-title">Cloud AI Platforms</div>
+            <div class="card-body">AWS Bedrock, Azure AI Studio, GCP Vertex AI, Hugging Face Endpoints</div>
+          </div>
+        </div>
+      </div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat-box"><div class="stat-num">500+</div><div class="stat-label">AI Tools Launched in 2024</div></div>
+        <div class="stat-box"><div class="stat-num">40M</div><div class="stat-label">GitHub Copilot Users</div></div>
+        <div class="stat-box"><div class="stat-num">3×</div><div class="stat-label">Dev Productivity Boost</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 9 · IT LAYOFFS & TREND SHIFT
+  ══════════════════════════════════════════════ -->
+  <div class="slide" id="s9">
+    <div class="bg-blob" style="width:450px;height:450px;background:radial-gradient(var(--magenta),transparent 70%);opacity:.08;bottom:-100px;left:-30px;"></div>
+    <div class="slide-content">
+      <div class="slide-num">09 / 12</div>
+      <div class="badge" style="border-color:var(--magenta);color:var(--magenta);">The Reality Check</div>
+      <h2 style="font-size:clamp(1.4rem,3vw,2.3rem);">IT <span style="color:var(--magenta)">Layoffs</span> & the Trend Shift</h2>
+      <div class="nline" style="background:linear-gradient(90deg,var(--magenta),var(--amber));box-shadow:0 0 12px var(--magenta);"></div>
+      <div class="two-col">
+        <div>
+          <p style="font-size:.82rem;color:var(--muted);line-height:1.65;margin-bottom:12px;">The tech sector is undergoing a seismic shift. AI is automating repetitive roles while creating entirely new categories of work.</p>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-label">2022–23</div>
+              <div class="tl-text">Macro correction: 200K+ tech layoffs at Google, Meta, Amazon, Microsoft.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-label">2024</div>
+              <div class="tl-text">AI automation begins replacing QA testers, junior coders, data entry roles.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-label">2025</div>
+              <div class="tl-text">Devin, OpenAI Operator handle full engineering tasks end-to-end.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-label">2026+</div>
+              <div class="tl-text">Hybrid roles surge: AI Trainer, Prompt Engineer, Agent Architect.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p style="font-family:'Orbitron',sans-serif;font-size:.72rem;color:var(--neon);letter-spacing:.08em;margin-bottom:10px;">ROLES AT RISK → ROLES EMERGING</p>
+          <table class="glow-table">
+            <tr><th><i class="fa-solid fa-triangle-exclamation"></i> Being Disrupted</th><th><i class="fa-solid fa-rocket"></i> Growing Fast</th></tr>
+            <tr><td>Junior Developer</td><td>AI Agent Engineer</td></tr>
+            <tr><td>Manual QA Tester</td><td>Prompt Architect</td></tr>
+            <tr><td>Data Entry Analyst</td><td>AI Safety Researcher</td></tr>
+            <tr><td>Boilerplate Coder</td><td>LLM Fine-Tuner</td></tr>
+            <tr><td>Tier-1 IT Support</td><td>AI Product Manager</td></tr>
+            <tr><td>Report Generator</td><td>AI Systems Integrator</td></tr>
+          </table>
+          <div class="stat-row" style="margin-top:12px;">
+            <div class="stat-box"><div class="stat-num">260K+</div><div class="stat-label">Tech Layoffs 2023</div></div>
+            <div class="stat-box"><div class="stat-num">97M</div><div class="stat-label">New AI Jobs by 2025</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 10 · FUTURE SCOPE
+  ══════════════════════════════════════════════ -->
+  <div class="slide" id="s10">
+    <div class="bg-blob" style="width:500px;height:500px;background:radial-gradient(var(--neon),transparent 70%);opacity:.07;top:-120px;right:-40px;"></div>
+    <div class="slide-content">
+      <div class="slide-num">10 / 12</div>
+      <div class="badge">Tomorrow's World</div>
+      <h2 style="font-size:clamp(1.5rem,3.2vw,2.6rem);">Future <span style="color:var(--neon)">Scope</span> of Agentic AI</h2>
+      <div class="nline"></div>
+      <div class="scroll-inner">
+        <div class="card-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-hospital-user"></i></div>
+            <div class="card-title">Healthcare</div>
+            <div class="card-body">Agents monitor patients 24/7, suggest diagnoses, co-ordinate specialist referrals — AI doctors as assistants.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-code-branch"></i></div>
+            <div class="card-title">Software Engineering</div>
+            <div class="card-body">AI writes, reviews, deploys, monitors production code autonomously. Engineers become AI directors.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-book-open"></i></div>
+            <div class="card-title">Education</div>
+            <div class="card-body">Personal AI tutors adapt to each student in real-time, available 24/7 in any language.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-building-columns"></i></div>
+            <div class="card-title">FinTech</div>
+            <div class="card-body">Agentic trading bots, fraud detectors, personalised wealth managers operating at microsecond speed.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-leaf"></i></div>
+            <div class="card-title">Climate & Science</div>
+            <div class="card-body">Agents run millions of climate simulations, accelerate materials science and drug discovery.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i class="fa-solid fa-handshake"></i></div>
+            <div class="card-title">Human–AI Collaboration</div>
+            <div class="card-body">Every professional augmented by a personal AI agent — lawyer, architect, teacher, doctor.</div>
+          </div>
+        </div>
+        <div class="stat-row" style="margin-top:14px;">
+          <div class="stat-box"><div class="stat-num">$15.7T</div><div class="stat-label">AI GDP contribution by 2030</div></div>
+          <div class="stat-box"><div class="stat-num">85M</div><div class="stat-label">Jobs transformed, not erased</div></div>
+          <div class="stat-box"><div class="stat-num">AGI?</div><div class="stat-label" style="color:var(--magenta);">Predicted 2027–2030</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 11 · STARTUPS & INNOVATION
+  ══════════════════════════════════════════════ -->
+  <div class="slide" id="s11">
+    <div class="bg-blob" style="width:440px;height:440px;background:radial-gradient(var(--amber),transparent 70%);opacity:.07;bottom:-100px;right:-30px;"></div>
+    <div class="slide-content">
+      <div class="slide-num">11 / 12</div>
+      <div class="badge" style="border-color:var(--amber);color:var(--amber);">Opportunity Now</div>
+      <h2 style="font-size:clamp(1.4rem,3vw,2.4rem);">Empowering <span style="color:var(--amber)">Startups</span> & Innovation</h2>
+      <div class="nline" style="background:linear-gradient(90deg,var(--amber),var(--magenta));box-shadow:0 0 12px var(--amber);"></div>
+      <div class="two-col">
+        <div>
+          <p style="font-size:.85rem;color:var(--muted);line-height:1.65;margin-bottom:14px;">Agentic AI has democratised startup creation. A <strong style="color:var(--white)">solo founder</strong> with AI agents can now do the work of a 10-person team.</p>
+          <div class="card" style="margin-bottom:12px;border-color:rgba(255,184,0,.3);">
+            <div class="card-icon"><i class="fa-solid fa-rocket"></i></div>
+            <div class="card-title" style="color:var(--amber);">The 1-Person Unicorn</div>
+            <div class="card-body">AI handles coding, design, marketing copy, customer support, data analysis. Founder focuses purely on vision and strategy.</div>
+          </div>
+          <div class="card" style="border-color:rgba(255,184,0,.3);">
+            <div class="card-icon"><i class="fa-solid fa-coins"></i></div>
+            <div class="card-title" style="color:var(--amber);">VC Investment Surge</div>
+            <div class="card-body">$50B+ invested in AI startups in 2024 alone. Seed rounds for AI-native products at all-time highs.</div>
+          </div>
+        </div>
+        <div>
+          <p style="font-family:'Orbitron',sans-serif;font-size:.72rem;color:var(--neon);letter-spacing:.08em;margin-bottom:10px;">AI-POWERED STARTUP STACK</p>
+          <ul class="fancy-list">
+            <li><span class="bullet" style="color:var(--amber)">◆</span><div><strong style="color:var(--white)">Product Dev</strong><br/>Cursor + Claude = Full-stack app in a weekend.</div></li>
+            <li><span class="bullet" style="color:var(--amber)">◆</span><div><strong style="color:var(--white)">Design</strong><br/>v0.dev + Midjourney = pixel-perfect UI instantly.</div></li>
+            <li><span class="bullet" style="color:var(--amber)">◆</span><div><strong style="color:var(--white)">Marketing</strong><br/>GPT-4o writes SEO content, ad copy, social posts.</div></li>
+            <li><span class="bullet" style="color:var(--amber)">◆</span><div><strong style="color:var(--white)">Customer Support</strong><br/>AI agents handle 80% of tickets with zero human effort.</div></li>
+            <li><span class="bullet" style="color:var(--amber)">◆</span><div><strong style="color:var(--white)">Analytics</strong><br/>AI surfaces insights from data — no analyst needed.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SLIDE 12 · Q&A
+  ══════════════════════════════════════════════ -->
+  <div class="slide" id="s12">
+    <div class="bg-blob" style="width:600px;height:600px;background:radial-gradient(var(--neon),transparent 70%);opacity:.08;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;"></div>
+    <div class="slide-content">
+      <div class="qa-central">
+        <div class="qa-symbol">Q&A</div>
+        <h2 style="font-family:'Orbitron',sans-serif;font-size:clamp(1rem,2.5vw,1.8rem);font-weight:700;color:var(--white);">Questions & Discussion</h2>
+        <div class="nline" style="margin:10px auto;"></div>
+        <p style="font-size:.88rem;color:var(--muted);max-width:600px;line-height:1.7;text-align:center;">The floor is open. Ask anything about Agentic AI, MCP, the future of programming, or how to position yourself for the AI-first world.</p>
+        <div class="tag-cloud" style="justify-content:center;margin-top:10px;">
+          <span class="tag cyan">MCP</span>
+          <span class="tag pink">Agents</span>
+          <span class="tag amber">Jobs</span>
+          <span class="tag cyan">Startups</span>
+          <span class="tag pink">Vibe Coding</span>
+          <span class="tag amber">Future</span>
+          <span class="tag cyan">Tools</span>
+        </div>
+        <div style="margin-top:22px;font-family:'Space Mono',monospace;font-size:.75rem;color:rgba(0,255,231,.5);letter-spacing:.12em;text-align:center;">
+          AGENTIC AI · NEXT GEN PROGRAMMING · 2025<br/>
+          <span style="color:rgba(255,255,255,.2);margin-top:6px;display:block;">Thank you for attending this session</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /#deck -->
+
+<!-- CONTROLS -->
+<div id="controls">
+  <button class="ctrl-btn" id="prevBtn" title="Previous (←)">&#8592;</button>
+  <span id="slide-counter">1 / 12</span>
+  <button class="ctrl-btn" id="nextBtn" title="Next (→)">&#8594;</button>
+</div>
+
+<script>
+  /* ── STARS ── */
+  (function(){
+    const canvas = document.getElementById('stars');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    function resize(){ canvas.width=innerWidth; canvas.height=innerHeight; }
+    function createStars(){
+      stars = Array.from({length:180},()=>({
+        x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+        r: Math.random()*1.5+.3,
+        op: Math.random()*.7+.1,
+        sp: Math.random()*3+2
+      }));
+    }
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      stars.forEach(s=>{
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(255,255,255,${s.op})`;
+        ctx.fill();
+      });
+    }
+    function animate(){
+      stars.forEach(s=>{
+        s.op += (Math.random()-.5)*.04;
+        s.op = Math.max(.05,Math.min(.9,s.op));
+      });
+      draw(); requestAnimationFrame(animate);
+    }
+    window.addEventListener('resize',()=>{ resize(); createStars(); draw(); });
+    resize(); createStars(); animate();
+  })();
+
+  /* ── SLIDESHOW LOGIC ── */
+  const slides = document.querySelectorAll('.slide');
+  const total  = slides.length;
+  let current  = 0;
+
+  const counter  = document.getElementById('slide-counter');
+  const progress = document.getElementById('progress');
+
+  function goTo(n, dir='next'){
+    const prev = current;
+    current = ((n % total) + total) % total;
+
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add('exit');
+
+    // apply direction
+    if(dir === 'prev'){
+      slides[current].style.transform = 'translateX(-80px) scale(.97)';
+    } else {
+      slides[current].style.transform = 'translateX(80px) scale(.97)';
+    }
+
+    setTimeout(()=>{
+      slides[prev].classList.remove('exit');
+      slides[current].classList.add('active');
+      slides[current].style.transform = '';
+    },50);
+
+    counter.textContent = `${current+1} / ${total}`;
+    progress.style.width = `${((current+1)/total)*100}%`;
+  }
+
+  function next(){ goTo(current+1,'next'); }
+  function prev(){ goTo(current-1,'prev'); }
+
+  document.getElementById('nextBtn').addEventListener('click', next);
+  document.getElementById('prevBtn').addEventListener('click', prev);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown') next();
+    if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   prev();
+    if(e.key==='f'||e.key==='F') toggleFullscreen();
+  });
+
+  // touch swipe
+  let tx=0,ty=0;
+  document.addEventListener('touchstart',e=>{ tx=e.touches[0].clientX; ty=e.touches[0].clientY; },{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx;
+    const dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>40){ dx<0?next():prev(); }
+  });
+
+  // init
+  progress.style.width = `${(1/total)*100}%`;
+
+  /* ── FULLSCREEN ── */
+  function toggleFullscreen(){
+    if(!document.fullscreenElement){
+      document.documentElement.requestFullscreen().catch(()=>{});
+    } else {
+      document.exitFullscreen();
+    }
+  }
+  document.addEventListener('fullscreenchange',()=>{
+    document.getElementById('fs-btn').textContent =
+      document.fullscreenElement ? '⛶ EXIT FS' : '⛶ FULLSCREEN';
+  });
+</script>
+</body>
+</html>
